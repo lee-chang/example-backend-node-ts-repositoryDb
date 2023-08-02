@@ -1,0 +1,60 @@
+
+# EJEMPLO DE ESTRUCTURA BACKEND CON NODEJS - TYPESCRIPT - EXPRESS
+
+Estructura ideal para proyectos basico con NodeJS
+
+## Instalación, configuración y ejecución
+
+```bash
+npm install
+npm run dev
+```
+
+## Estructura de carpetas
+
+```bash
+├── src
+│   ├── config
+│   │   ├── env.ts
+│   │   ├── db.ts
+│   ├── controllers
+│   │   ├── {name}.controller.ts
+│   ├── middlewares
+│   ├── models
+│   │   ├── {name}.model.ts
+│   ├── routes
+│   │   ├── {name}.routes.ts
+│   ├── services
+│   │   ├── {name}.service.ts
+│   ├── schemas
+│   │   ├── {name}.schema.ts
+│   ├── repositories
+│   │   ├── {name}.repository.ts
+│   ├── utils
+│   │   ├── http.response.util.ts
+│   │   ├── jwt.util.ts
+│   ├── app.ts
+│   ├── index.ts
+
+```
+
+## Routes description
+
+La carperta de 'routes' tiene una importacion automatica de todas las rutas que se encuentren en la carpeta, por lo que no es necesario importarlas en el archivo 'app.ts'
+
+
+## Lista de dependencias
+
+- [express](https://www.npmjs.com/package/express) - Framework para NodeJS
+- [morgan](https://www.npmjs.com/package/morgan) - Logger para NodeJS
+- [cors](https://www.npmjs.com/package/cors) - Middleware para habilitar CORS
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs) - Encriptador de contraseñas
+- [zod](https://www.npmjs.com/package/zod) - Validador de esquemas
+- [cookie-parser](https://www.npmjs.com/package/cookie-parser) - Parseador de cookies
+- [helmet](https://www.npmjs.com/package/helmet) - Middleware para seguridad
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) - Generador de tokens
+- [mongoose](https://www.npmjs.com/package/mongoose) - ORM para MongoDB
+
+## Contributing
+
+Pull requests son bienvenidas. Para cambios importantes, por favor abra un issue primero para discutir lo que le gustaría cambiar.
