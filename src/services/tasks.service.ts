@@ -6,7 +6,9 @@ import {
   deleteTaskById,
   getTaskByUser,
 } from "../repositories/mongoose/task.repository";
-import { Task } from "../interfaces/task.interface";
+import { Task } from "../interfaces/entities/task.interface";
+
+// ** CRUD 
 
 export const listAllTasks = async () => {
   const tasks = await getAllTasks();
@@ -32,6 +34,8 @@ export const removeTask = async (id: string) => {
   const deleteTask = await deleteTaskById(id);
   return deleteTask;
 };
+
+// ** RELATIONSHIPS
 
 export const listAllTaskByUser = async (id: string) => {
   const tasks = await getTaskByUser(id);

@@ -1,4 +1,4 @@
-import { User } from './user.interface';
+import { User } from './entities/user.interface';
 
 export interface Auth {
     email: string;

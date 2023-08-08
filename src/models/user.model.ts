@@ -1,11 +1,11 @@
-import { ROL, User } from "@/interfaces/user.interface";
-import { uuidV4Generator } from "@/utils/UuidV4Generator.util";
+import { User } from "@/interfaces/entities/user.interface";
+import { uuidDBGenerator } from "@/utils/UuidGenerator.util";
 import { model, Schema } from "mongoose";
 
 const userSchema: Schema = new Schema<User>({
   _id: {
     type: String,
-    default: uuidV4Generator.generate(),
+    default: uuidDBGenerator.generate(),
   },
   userName: {
     type: String,
@@ -21,11 +21,10 @@ const userSchema: Schema = new Schema<User>({
     type: String,
     require: true,
   },
-  authority: {
+  authority: [{
     type: String,
-    default: ROL.USER,
-    require: true,
-  },
+    ref: "Role"
+  }],
   fullName: {
     type: String,
     trim: true,

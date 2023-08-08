@@ -1,12 +1,12 @@
 import { model, Schema } from 'mongoose'
-import { Task } from '@/interfaces/task.interface'
-import { uuidV4Generator } from '@/utils/UuidV4Generator.util'
+import { Task } from '@/interfaces/entities/task.interface'
+import { uuidDBGenerator } from '@/utils/UuidGenerator.util'
 
 const taskSchema: Schema = new Schema<Task>(
   {
     _id: {
       type: String,
-      default: uuidV4Generator.generate(),
+      default: uuidDBGenerator.generate(),
     },
     title: {
       type: String,
@@ -24,7 +24,7 @@ const taskSchema: Schema = new Schema<Task>(
     },
     user: {
       ref: 'User',
-      type: Schema.Types.ObjectId,
+      type: String,
       required: true,
     },
   },

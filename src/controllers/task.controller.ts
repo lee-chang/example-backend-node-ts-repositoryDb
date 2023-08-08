@@ -7,7 +7,7 @@ import {
   callTask,
   registerTask,
 } from "@/services/tasks.service";
-import { Task } from "@/interfaces/task.interface";
+import { Task } from "@/interfaces/entities/task.interface";
 
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
   const user = req.user;

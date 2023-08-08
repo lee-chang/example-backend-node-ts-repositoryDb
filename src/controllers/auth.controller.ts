@@ -1,66 +1,77 @@
-import { Request, Response } from "express";
-import { User } from "@/interfaces/user.interface";
-import { authenticationUser, createUser } from "../services/auth.service";
-import { Auth } from "@/interfaces/auth.interface";
+import { Request, Response } from 'express'
+import { User } from '@/interfaces/entities/user.interface'
+import { authenticationUser, createUser } from '../services/auth.service'
+import { Auth } from '@/interfaces/auth.interface'
 import {
   ErrorExt,
   HttpResponse,
   handleError,
   httpStatus,
-} from "@/utils/http.response.util";
-import { callUser, isUserExistWithEmail } from "@/services/user.service";
+} from '@/utils/http.response.util'
+import { callUser, isUserExistWithEmail } from '@/services/user.service'
 
+interface userData {
+  id: string
+  userName: string
+  email: string
+  authority: string[]
+}
+
+interface resAuth {
+  user: userData
+  token: string
+}
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  const user: User = req.body;
+  const user: User = req.body
   try {
-    const isExistEmail = await isUserExistWithEmail(user.email);
+    const isExistEmail = await isUserExistWithEmail(user.email)
 
     if (isExistEmail)
-      throw new ErrorExt("EMAIL_ALREADY_EXIST", httpStatus.BAD_REQUEST);
+      throw new ErrorExt('EMAIL_ALREADY_EXIST', httpStatus.BAD_REQUEST)
 
-    if (!user.userName || !user.email || !user.password)
-      throw new ErrorExt("DATA_NOT_FOUND", httpStatus.BAD_REQUEST);
+    if (!user.userName || !user.email || !user.password )
+      throw new ErrorExt('DATA_NOT_FOUND', httpStatus.BAD_REQUEST)
+      
+    const newUser = await createUser(user)
 
-    const newUser = await createUser(user);
-    if (!newUser)
-      throw new ErrorExt("USER_NOT_CREATED", httpStatus.BAD_REQUEST);
+    // console.log('New user',newUser)
+    
+    if (!newUser) throw new ErrorExt('USER_NOT_CREATED', httpStatus.BAD_REQUEST)
 
-    const data = {
+    const data: resAuth = {
       user: {
-        id: newUser.user._id,
+        id: newUser.user._id.toString(),
         userName: newUser.user.userName,
         email: newUser.user.email,
-        updatedAt: newUser.user.updatedAt,
-        createdAt: newUser.user.createdAt,
+        authority: newUser.user.authority,
       },
       token: newUser.token,
-    };
+    }
 
-    HttpResponse.OkCookieAuth(res, data, newUser.token);
+    HttpResponse.OkCookieAuth(res, data, newUser.token)
   } catch (err) {
     if (err instanceof ErrorExt) {
-      handleError.call(res, err);
+      handleError.call(res, err)
     } else {
-      HttpResponse.Error(res, err);
+      HttpResponse.Error(res, err)
     }
   }
-};
+}
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-  const user: Auth = req.body;
+  const user: Auth = req.body
 
   if (!user.email || !user.password)
-    throw new ErrorExt("DATA_NOT_FOUND", httpStatus.BAD_REQUEST);
+    throw new ErrorExt('DATA_NOT_FOUND', httpStatus.BAD_REQUEST)
 
   try {
-    const loginUser = await authenticationUser(user);
-    if (!loginUser)
-      throw new ErrorExt("USER_NOT_LOGIN", httpStatus.BAD_REQUEST);
+    const loginUser = await authenticationUser(user)
+    if (!loginUser) throw new ErrorExt('USER_NOT_LOGIN', httpStatus.BAD_REQUEST)
 
-    const { user: userLogged, token } = loginUser;
+    const { user: userLogged, token } = loginUser
 
-    const data = {
+    const data: resAuth = {
       user: {
         id: userLogged._id,
         userName: userLogged.userName,
@@ -68,47 +79,47 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         authority: userLogged.authority,
       },
       token: token,
-    };
+    }
 
-    HttpResponse.OkCookieAuth(res, data, token);
+    HttpResponse.OkCookieAuth(res, data, token)
   } catch (err) {
     if (err instanceof ErrorExt) {
-      handleError.call(res, err);
+      handleError.call(res, err)
     } else {
-      HttpResponse.Error(res, err);
+      HttpResponse.Error(res, err)
     }
   }
-};
+}
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    HttpResponse.OkCookieAuth(res, {}, "");
+    HttpResponse.OkCookieAuth(res, {}, '')
   } catch (err) {
     if (err instanceof ErrorExt) {
-      handleError.call(res, err);
+      handleError.call(res, err)
     } else {
-      HttpResponse.Error(res, err);
+      HttpResponse.Error(res, err)
     }
   }
-};
+}
 
 export const profile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userFound = await callUser(req.user.id);
-    if (!userFound)
-      throw new ErrorExt("USER_NOT_FOUND", httpStatus.BAD_REQUEST);
-    const data = {
-      id: userFound._id,
+    const userFound = await callUser(req.user.id)
+    if (!userFound) throw new Error('USER_NOT_FOUND')
+
+    const data: userData = {
+      id: userFound._id.toString(),
       userName: userFound.userName,
       email: userFound.email,
-      authority: userFound.authority,
-    };
-    HttpResponse.Ok(res, { user: data });
+      authority: userFound.authority
+    }
+    HttpResponse.Ok(res, { user: data })
   } catch (err) {
     if (err instanceof ErrorExt) {
-      handleError.call(res, err);
+      handleError.call(res, err)
     } else {
-      HttpResponse.Error(res, err);
+      HttpResponse.Error(res, err)
     }
   }
-};
+}

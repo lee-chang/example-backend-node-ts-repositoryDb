@@ -5,7 +5,7 @@ export interface Task {
     title: string;
     description: string;
     date: Date;
-    user: Types.ObjectId;
+    user: string;
     createdAt: Date;
     updatedAt: Date;
 }

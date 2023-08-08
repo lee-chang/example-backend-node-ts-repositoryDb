@@ -1,4 +1,4 @@
-import { Task } from "@/interfaces/task.interface";
+import { Task } from "@/interfaces/entities/task.interface";
 import TaskModel from "@/models/task.model";
 
 export const getAllTasks = async () => {
