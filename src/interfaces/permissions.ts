@@ -5,6 +5,10 @@ export interface PermissionObject {
 export type KeyPermissions = keyof typeof Permission
 
 enum Permission {
+
+  // ** ALL PERMISSIONS (FOR SUPER ADMIN)
+  ALL_PERMISSIONS = 'ALL PERMISSIONS',
+
   // ** PRODUCT
   CREATE_PRODUCT = 'CREATE PRODUCT',
   READ_PRODUCT = 'READ PRODUCT',
@@ -38,3 +42,6 @@ enum Permission {
 }
 
 export default Permission
+
+// How return the key of enum in typescript
+

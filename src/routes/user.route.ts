@@ -3,6 +3,7 @@ import {
   getUser,
   getUsers,
   deleteUser,
+  updateRolesByUser,
 } from '@/controllers/user.controller'
 import Permission from '@/interfaces/permissions'
 import { checkPermission } from '@/middlewares/validatePermission'
@@ -21,7 +22,7 @@ router.put('/:id', authRequired, updateUser)
 router.put(
   '/:id/roles',
   authRequired,
-  updateUser
+  updateRolesByUser
 )
 
 export { router }

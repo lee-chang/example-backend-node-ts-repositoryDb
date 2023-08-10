@@ -19,6 +19,4 @@ router.put('/:id/permissions', authRequired, updatePermissionsByRole)
 // ** PERMISSION
 router.get('/permissions', authRequired,  listPermissions)
 
-
-
 export { router }

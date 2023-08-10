@@ -17,14 +17,13 @@ export const authRequired = (
   // const token = req.cookies.jwt_token
   const bearerToken = req.headers.authorization as string
 
-  const token = bearerToken.split(' ')[1]
-
-  if (!token)
+  if (!bearerToken)
     return HttpResponse.Error(res, {
       error: 'INVALID_SESSION',
       status: httpStatus.UNAUTHORIZED,
     })
-
+    
+  const token = bearerToken.split(' ')[1]
   try {
     const decoded = jwt.verify(token, TOKEN_SECRET)
 

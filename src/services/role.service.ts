@@ -77,7 +77,7 @@ export const isValidatePermissionByRol = async (
   id: string,
   permission: Permission
 ): Promise<Boolean> => {
-  const role: Role = await callRole(id)
+  const role = await getRoleById(id)
   if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
 
   // -> Rol.permissions = [ '[key] del permiso'  ]
@@ -85,9 +85,15 @@ export const isValidatePermissionByRol = async (
 
   // ** Buscar la key del permiso en el array de permisos del rol
 
-  const { permissions } = role
+  const { permissions }: { permissions: [KeyPermissions] } = role
 
   let checking = false
+
+  // ** Si tiene el permissions tiene ALL_PERMISSIONS no se valida el permiso
+
+  const hasAllPermissions = permissions.includes('ALL_PERMISSIONS')
+
+  if (hasAllPermissions) return true
 
   permissions.forEach((p) => {
     if (Permission[p] === permission) checking = true
@@ -104,6 +110,45 @@ export const isValidPermission = (permission: KeyPermissions) => {
   return isValid ? true : false
 }
 
+export const addUserInRol = async (idUser: string, idRole: string) => {
+  const role = await getRoleById(idRole)
+
+  if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
+
+  // ** Validar que el usuario no este duplicado en el array de usuarios del rol
+
+  const { users } = role
+
+  let isDuplicatedUser = false
+
+  users.forEach((u) => {
+    if (u === idUser) isDuplicatedUser = true
+  })
+
+  if (!isDuplicatedUser) role.users.push(idUser)
+
+  const updateRole = role.save()
+
+  return updateRole
+}
+
+export const removeUserInRol = async (idUser: string, idRole: string) => {
+  const role = await getRoleById(idRole)
+
+  if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
+
+  const { users } = role
+
+  const index = users.indexOf(idUser)
+
+  if (index > -1) {
+    users.splice(index, 1)
+  }
+
+  const updateRole = role.save()
+
+  return updateRole
+}
 
 // ** PERMISSIONS
 
