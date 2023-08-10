@@ -1,12 +1,13 @@
-import { getAllUsers, getUserByEmail, getUserById, updateUserById } from "@/repositories/mongoose/user.repository";
+import { deleteUserById, getAllUsers, getUserByEmail, getUserById, updateUserById } from "@/repositories/mongoose/user.repository";
 import { User } from "../interfaces/entities/user.interface";
+import { ErrorExt, httpStatus } from "@/utils/http.response.util";
 
 
 // ** CRUD
 
 export const callUser = async (id: string): Promise<User> => {
   const userFount = await getUserById(id);
-  if (!userFount) throw new Error("USER_NOT_EXIST");
+  if (!userFount) throw new ErrorExt("USER_NOT_EXIST", httpStatus.BAD_REQUEST);
   return userFount;
 };
 
@@ -17,10 +18,15 @@ export const listAllUsers = async (): Promise<User[]> => {
 
 export const actualizeUser = async (id: string, user: User): Promise<User> => {
   const userUpdated = await updateUserById(id, user);
-  if (!userUpdated) throw new Error("USER_NOT_EXIST");
+  if (!userUpdated) throw new ErrorExt("USER_NOT_EXIST", httpStatus.BAD_REQUEST);
   return userUpdated;
 }
 
+export const removeUser = async (id: string): Promise<User> => {
+  const userDeleted = await deleteUserById(id);
+  if (!userDeleted) throw new ErrorExt("USER_NOT_EXIST", httpStatus.BAD_REQUEST);
+  return userDeleted;
+}
 
 // ** UTILS
 
@@ -36,10 +42,17 @@ export const isUserExistWithId = async (id: string): Promise<Boolean> => {
 
 
 // ** RELATIONSHIPS
-export const  updateRoleByUser = async (id: string, idRole: string) => {
-  const user = await callUser(id);
-  // const role = await callRole(idRole);
-  // user.roles.push(role);
-  // await user.save();
-  return user;
+export const  updateRoleByUserId = async (id: string, roles: [string]): Promise<User> => {
+  const user = await getUserById(id);
+
+  if (!user) throw new ErrorExt("USER_NOT_EXIST", httpStatus.BAD_REQUEST);
+
+
+  // ** validar que el rol exista
+
+  const updateUser = await updateUserById(id, { ...user, authority: roles });
+
+  if (!updateUser) throw new ErrorExt("USER_NOT_EXIST", httpStatus.BAD_REQUEST)
+
+  return updateUser
 }

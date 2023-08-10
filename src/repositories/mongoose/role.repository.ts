@@ -1,4 +1,5 @@
 import { Role } from '@/interfaces/entities/role.interface'
+import Permission, { KeyPermissions } from '@/interfaces/permissions'
 import { RoleModel } from '@/models/rol.model'
 
 export const getAllRoles = async () => {
@@ -32,4 +33,14 @@ export const deleteRoleById = async (id: string) => {
   return deleteRole
 }
 
+export const updatePermissions = async (id: string, permissions: [KeyPermissions]) => {
+
+  const role = await getRoleById(id)
+  if (!role) throw new Error('ROLE_NOT_EXIST')
+
+  role.permissions = permissions
+  const roleUpdated = await role.save()
+
+  return roleUpdated
+}
 

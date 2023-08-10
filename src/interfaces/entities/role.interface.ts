@@ -1,9 +1,9 @@
-import Permission from "../permissions";
+import { KeyPermissions } from "../permissions";
 
 export interface Role {
     _id: string;
     name: string;
-    permissions: [keyof typeof Permission];
+    permissions: [KeyPermissions];
     users: string[];
     createdAt: Date;
     updatedAt: Date;

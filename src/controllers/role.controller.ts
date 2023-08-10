@@ -1,16 +1,16 @@
 import { Request, Response } from 'express'
-import { ErrorExt, HttpResponse, handleError } from '@/utils/http.response.util'
+import { ErrorExt, HttpResponse, handleError, httpStatus } from '@/utils/http.response.util'
 import {
   listAllRoles,
   actualizeRole,
   removeRole,
   callRole,
   registerRole,
-  assignPermissionByRoleId,
-  removePermissionByRoleId,
+  updatePermissionsByRoleId,
+  isValidPermission,
 } from '@/services/role.service'
 import { Role } from '@/interfaces/entities/role.interface'
-import Permission, { PermissionObject } from '@/interfaces/permissions'
+import Permission, { KeyPermissions, PermissionObject } from '@/interfaces/permissions'
 
 export const getRoles = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -100,35 +100,26 @@ export const listPermissions = async (req: Request, res: Response) => {
   // return object "KEYS" : "VALUES" from enum Permission
 
   const permissions = Object.keys(Permission).reduce((acc, key) => {
-    acc[key] = Permission[key as keyof typeof Permission]
+    acc[key] = Permission[key as KeyPermissions]
     return acc
   }, {} as PermissionObject)
 
   return HttpResponse.Ok(res, permissions)
 }
 
-export const assignPermission = async (req: Request, res: Response) => {
+export const updatePermissionsByRole = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { permission } = req.body
+  const { permissions }: { permissions: [KeyPermissions] } = req.body
 
   try {
-    const role = await assignPermissionByRoleId(id, permission)
-    HttpResponse.Ok(res, role)
-  } catch (err) {
-    if (err instanceof ErrorExt) {
-      handleError.call(res, err)
-    } else {
-      HttpResponse.Error(res, err)
-    }
-  }
-}
+    permissions.map((p) => {
+      console.log(p)
+      if (!isValidPermission(p)) {
+        throw new ErrorExt('PERMISSION_NOT_VALID', httpStatus.BAD_REQUEST)
+      }
+    })
 
-export const removePermission = async (req: Request, res: Response) => {
-  const { id } = req.params
-  const { permission } = req.body
-
-  try {
-    const role = await removePermissionByRoleId(id, permission)
+    const role = await updatePermissionsByRoleId(id, permissions)
     HttpResponse.Ok(res, role)
   } catch (err) {
     if (err instanceof ErrorExt) {

@@ -1,4 +1,4 @@
-import Permission, { PermissionObject } from '@/interfaces/permissions'
+import Permission, { KeyPermissions } from '@/interfaces/permissions'
 import { Role } from '@/interfaces/entities/role.interface'
 import {
   createdRole,
@@ -68,6 +68,11 @@ export const roleByName = async (name: string) => {
   return role
 }
 
+export const existRoleById = async (id: string): Promise<Boolean> => {
+  const role = await getRoleById(id)
+  return role ? true : false
+}
+
 export const isValidatePermissionByRol = async (
   id: string,
   permission: Permission
@@ -91,19 +96,20 @@ export const isValidatePermissionByRol = async (
   return checking ? true : false
 }
 
-export const isValidPermission = (permission: keyof typeof Permission) => {
-
+export const isValidPermission = (permission: KeyPermissions) => {
   const listAllPermissions = Object.keys(Permission)
 
   const isValid = listAllPermissions.includes(permission)
 
   return isValid ? true : false
 }
+
+
 // ** PERMISSIONS
 
 export const assignPermissionByRoleId = async (
   id: string,
-  permission: keyof typeof Permission
+  permission: KeyPermissions
 ) => {
   const role = await getRoleById(id)
   if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
@@ -114,7 +120,8 @@ export const assignPermissionByRoleId = async (
 
   const isValid = isValidPermission(permission)
 
-  if (!isValid) throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
+  if (!isValid)
+    throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
 
   // ** Validar que el permission no este duplicado en el array de permissions del rol
 
@@ -123,7 +130,8 @@ export const assignPermissionByRoleId = async (
   permissions.forEach((p) => {
     if (p === permission) isDuplicatedPermission = true
   })
-  if (isDuplicatedPermission) throw new ErrorExt('PERMISSION_ALREADY_EXIST', httpStatus.BAD_REQUEST)
+  if (isDuplicatedPermission)
+    throw new ErrorExt('PERMISSION_ALREADY_EXIST', httpStatus.BAD_REQUEST)
 
   const keyPermission = Permission[permission]
 
@@ -136,7 +144,10 @@ export const assignPermissionByRoleId = async (
   return updateRole
 }
 
-export const removePermissionByRoleId = async ( id: string, permission: keyof typeof Permission ) => {
+export const removePermissionByRoleId = async (
+  id: string,
+  permission: KeyPermissions
+) => {
   const role = await getRoleById(id)
   if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
 
@@ -146,7 +157,8 @@ export const removePermissionByRoleId = async ( id: string, permission: keyof ty
 
   const isValid = isValidPermission(permission)
 
-  if (!isValid) throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
+  if (!isValid)
+    throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
 
   // ** Validar que el permission no este duplicado en el array de permissions del rol
 
@@ -155,7 +167,8 @@ export const removePermissionByRoleId = async ( id: string, permission: keyof ty
   permissions.forEach((p) => {
     if (p === permission) isDuplicatedPermission = true
   })
-  if (!isDuplicatedPermission) throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
+  if (!isDuplicatedPermission)
+    throw new ErrorExt('PERMISSION_NOT_EXIST', httpStatus.BAD_REQUEST)
 
   const keyPermission = Permission[permission]
 
@@ -168,4 +181,21 @@ export const removePermissionByRoleId = async ( id: string, permission: keyof ty
   const updateRole = await updateRoleById(id, role)
 
   return updateRole
+}
+
+//se puede usar para actualizar los permisos de un rol
+export const updatePermissionsByRoleId = async (
+  id: string,
+  permissions: [KeyPermissions]
+) => {
+  const role = await getRoleById(id)
+  if (!role) throw new ErrorExt('ROLE_NOT_EXIST', httpStatus.BAD_REQUEST)
+
+  // ** Actualizar los permisos del rol
+
+  role.permissions = permissions
+
+  const roleUpdated = await role.save()
+
+  return roleUpdated
 }

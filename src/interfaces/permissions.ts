@@ -2,6 +2,8 @@ export interface PermissionObject {
   [key: string]: string
 }
 
+export type KeyPermissions = keyof typeof Permission
+
 enum Permission {
   // ** PRODUCT
   CREATE_PRODUCT = 'CREATE PRODUCT',
@@ -31,6 +33,7 @@ enum Permission {
 
   // ** PERMISSION
   READ_PERMISSION = 'READ PERMISSION',
+  
   ASSIGN_PERMISSION = 'ASSIGN PERMISSION', // ** RELATIONSHIPS ROLE-PERMISSION
 }
 

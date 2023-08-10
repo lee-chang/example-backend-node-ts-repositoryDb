@@ -5,7 +5,7 @@ export interface User extends Auth {
   _id: string
   userName: string
   fullName: string
-  authority: string[]
+  authority: [string]
   verified: boolean
   login_code: string
   phone: Phone

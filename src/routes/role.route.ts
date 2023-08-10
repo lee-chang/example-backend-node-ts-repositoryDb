@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createRole, deleteRole, getRole, getRoles, updateRole, listPermissions, assignPermission, removePermission } from '@/controllers/role.controller'
+import { createRole, deleteRole, getRole, getRoles, updateRole, listPermissions, updatePermissionsByRole } from '@/controllers/role.controller'
 import Permission from '@/interfaces/permissions'
 import { checkPermission } from '@/middlewares/validatePermission'
 import { authRequired } from '@/middlewares/validateToken'
@@ -13,8 +13,7 @@ router.delete('/:id', authRequired, deleteRole)
 router.put('/:id', authRequired, updateRole)
 
 // ** RELATIONSHIPS
-router.put('/:id/assign-permission', authRequired, assignPermission)
-router.delete('/:id/remove-permission', authRequired, removePermission)
+router.put('/:id/permissions', authRequired, updatePermissionsByRole)
 
 
 // ** PERMISSION
